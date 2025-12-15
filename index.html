@@ -1,0 +1,3304 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="theme-color" content="#0a0e27">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="專案管理">
+  <title>專案管理系統 v7.0 - 手機優化版</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          backgroundImage: {
+            'none': 'none'
+          }
+        }
+      },
+      corePlugins: {
+        backgroundImage: false
+      }
+    }
+  </script>
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* ========== 基礎工具類（替代 Tailwind）========== */
+    .grid { display: grid; }
+    .flex { display: flex; }
+    .hidden { display: none; }
+    .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.5rem; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .flex-1 { flex: 1 1 0%; }
+    .w-full { width: 100%; }
+    .h-full { height: 100%; }
+    .min-h-screen { min-height: 100vh; }
+    .p-2 { padding: 0.5rem; }
+    .p-3 { padding: 0.75rem; }
+    .p-4 { padding: 1rem; }
+    .p-6 { padding: 1.5rem; }
+    .p-8 { padding: 2rem; }
+    .p-12 { padding: 3rem; }
+    .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-3 { margin-bottom: 0.75rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mt-1 { margin-top: 0.25rem; }
+    .mt-2 { margin-top: 0.5rem; }
+    .text-center { text-align: center; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+    .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+    .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+    .text-5xl { font-size: 3rem; line-height: 1; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .font-medium { font-weight: 500; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-full { border-radius: 9999px; }
+    .space-y-2 > * + * { margin-top: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-4 > * + * { margin-top: 1rem; }
+    
+    /* 響應式 */
+    @media (min-width: 768px) {
+      .md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .md\\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .md\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .md\\:grid-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    }
+    
+    /* 手機優化 (<768px) */
+    @media (max-width: 767px) {
+      body {
+        font-size: 14px;
+      }
+      
+      /* 隱藏桌面版搜尋欄 */
+      .desktop-search {
+        display: none !important;
+      }
+      
+      /* 專案卡片改為單欄 */
+      .project-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+      }
+      
+      /* 專案資訊區塊改為縱向 */
+      .project-info {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 0.5rem !important;
+      }
+      
+      /* 標籤改為自適應寬度 */
+      .project-tag {
+        width: auto !important;
+        min-width: auto !important;
+      }
+      
+      /* 進度條佔滿寬度 */
+      .progress-container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin-top: 0.5rem;
+      }
+      
+      /* 按鈕區塊 */
+      .action-buttons {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 0.5rem;
+      }
+      
+      /* Modal 佔滿螢幕 */
+      .neon-modal {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0.5rem !important;
+        max-height: calc(100vh - 1rem) !important;
+      }
+      
+      /* 統計卡片改為單欄 */
+      .stat-card {
+        margin-bottom: 0.75rem;
+      }
+      
+      /* 按鈕加大方便點擊 */
+      button {
+        min-height: 44px;
+        min-width: 44px;
+      }
+      
+      /* 表單輸入框加大 */
+      input, textarea, select {
+        min-height: 44px;
+        font-size: 16px !important; /* 防止 iOS 自動縮放 */
+      }
+      
+      /* 隱藏不重要的欄位 */
+      .hide-on-mobile {
+        display: none !important;
+      }
+      
+      /* 字體調整 */
+      h1 { font-size: 24px !important; }
+      h2 { font-size: 20px !important; }
+      h3 { font-size: 16px !important; }
+      
+      /* padding 縮小 */
+      .p-8 { padding: 1rem !important; }
+      .p-6 { padding: 1rem !important; }
+    }
+    
+    
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    /* 超清晰文字設定 */
+    body, input, textarea, select, button, label {
+      text-rendering: optimizeLegibility;
+      font-smooth: always;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      letter-spacing: 0.5px;
+    }
+    
+    /* 所有標題加強 */
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 900 !important;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 { font-size: 36px !important; }
+    h2 { font-size: 32px !important; }
+    /* h3 使用 Tailwind 類別控制，不強制大小 */
+    h4 { font-size: 24px !important; }
+    
+    /* Label 文字 */
+    label {
+      color: rgba(255, 255, 255, 0.95) !important;
+      font-weight: 800 !important;
+      font-size: 16px !important;
+      letter-spacing: 0.8px !important;
+      text-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+      text-transform: uppercase;
+    }
+    
+    /* 一般文字 */
+    p, span, div {
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    
+    /* SVG 圖標樣式 */
+    .tech-icon {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.5;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 0 4px currentColor);
+    }
+    
+    /* ========== 霓虹光條按鈕系統（深色底版） ========== */
+    
+    /* 基礎按鈕 - 深色底 + 霓虹光條 */
+    /* ========== 按鈕系統 - 與導航按鈕相同樣式 ========== */
+    .neon-button, .neon-button-success, .neon-button-danger, .neon-button-sm {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 32px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(118, 75, 162, 0.25));
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 2px solid transparent;
+      border-radius: 50px;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
+    }
+    
+    /* 小按鈕尺寸 */
+    .neon-button-sm {
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    /* === 藍色靜態光暈（一般按鈕） === */
+    .neon-button {
+      border-color: rgba(59, 130, 246, 0.8);
+      box-shadow: 
+        0 0 30px rgba(59, 130, 246, 0.5),
+        0 0 60px rgba(139, 92, 246, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    /* === 綠色靜態光暈（確認按鈕） === */
+    .neon-button-success {
+      border-color: rgba(16, 185, 129, 0.8);
+      box-shadow: 
+        0 0 30px rgba(16, 185, 129, 0.5),
+        0 0 60px rgba(34, 197, 94, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    /* === 橘紅色靜態光暈（取消按鈕） === */
+    .neon-button-danger {
+      border-color: rgba(239, 68, 68, 0.8);
+      box-shadow: 
+        0 0 30px rgba(239, 68, 68, 0.5),
+        0 0 60px rgba(249, 115, 22, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    /* 懸停效果 */
+    .neon-button:hover, .neon-button-success:hover, .neon-button-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 0 40px currentColor,
+        0 0 80px currentColor,
+        inset 0 0 30px rgba(255, 255, 255, 0.2);
+    }
+    
+    .neon-button:active, .neon-button-success:active, .neon-button-danger:active {
+      transform: translateY(0);
+    }
+    
+    /* 霓虹光條流動動畫 */
+    @keyframes neon-border-flow {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    
+    /* ========== 導航按鈕 ========== */
+    .nav-button {
+      position: relative;
+      padding: 14px 18px;
+      border-radius: 18px;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      font-weight: 700;
+    }
+    
+    .nav-button:hover {
+      background: rgba(102, 126, 234, 0.1);
+      border-color: rgba(102, 126, 234, 0.4);
+      box-shadow: 0 0 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .nav-button.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(118, 75, 162, 0.25));
+      border-color: rgba(102, 126, 234, 0.8);
+      box-shadow: 
+        0 0 30px rgba(102, 126, 234, 0.5),
+        0 0 60px rgba(118, 75, 162, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    /* ========== 毛玻璃材質系統 ========== */
+    
+    /* 主要毛玻璃 */
+    .glass {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+    }
+    
+    /* 淺色毛玻璃 */
+    .glass-light {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px) saturate(180%);
+      -webkit-backdrop-filter: blur(15px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+    }
+    
+    /* 統計卡片 - 與導航按鈕相同樣式 */
+    .stat-card {
+      position: relative;
+      padding: 24px;
+      border-radius: 18px;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(118, 75, 162, 0.25));
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      overflow: visible;
+    }
+    
+    /* 統計卡片數字和標籤樣式 */
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+    
+    /* 統計卡片懸停效果 */
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 
+        0 0 30px rgba(102, 126, 234, 0.5),
+        0 0 60px rgba(118, 75, 162, 0.3);
+    }
+    
+    /* 不同顏色的統計卡片光暈 */
+    .stat-card-blue {
+      border-color: rgba(59, 130, 246, 0.8);
+      box-shadow: 
+        0 0 30px rgba(59, 130, 246, 0.5),
+        0 0 60px rgba(37, 99, 235, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    .stat-card-purple {
+      border-color: rgba(168, 85, 247, 0.8);
+      box-shadow: 
+        0 0 30px rgba(168, 85, 247, 0.5),
+        0 0 60px rgba(147, 51, 234, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    .stat-card-green {
+      border-color: rgba(34, 197, 94, 0.8);
+      box-shadow: 
+        0 0 30px rgba(34, 197, 94, 0.5),
+        0 0 60px rgba(22, 163, 74, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    .stat-card-yellow {
+      border-color: rgba(245, 158, 11, 0.8);
+      box-shadow: 
+        0 0 30px rgba(245, 158, 11, 0.5),
+        0 0 60px rgba(217, 119, 6, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    .stat-card-red {
+      border-color: rgba(239, 68, 68, 0.8);
+      box-shadow: 
+        0 0 30px rgba(239, 68, 68, 0.5),
+        0 0 60px rgba(220, 38, 38, 0.3),
+        inset 0 0 25px rgba(255, 255, 255, 0.15);
+    }
+    
+    /* 統計卡片標題 */
+    .stat-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    /* 統計卡片數字 */
+    .stat-card .stat-number {
+      font-size: 56px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 8px;
+      text-shadow: 0 0 20px currentColor;
+    }
+    
+    /* 統計卡片描述 */
+    .stat-card .stat-label {
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0.8;
+    }
+    
+    /* Modal 毛玻璃 */
+    .neon-modal {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(30px) saturate(180%);
+      -webkit-backdrop-filter: blur(30px) saturate(180%);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* 卡片 - 深色底 + 霓虹光條 */
+    .neon-card {
+      position: relative;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      border: none;
+      border-radius: 24px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      overflow: visible;
+    }
+    
+    .neon-card::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: linear-gradient(135deg, #667eea, #764ba2, #667eea);
+      border-radius: 24px;
+      z-index: -1;
+      opacity: 1;
+      background-size: 400% 400%;
+      animation: neon-border-flow 4s ease infinite;
+    }
+    
+    .neon-card:hover {
+      background: rgba(15, 23, 42, 0.95);
+      transform: translateY(-4px);
+    }
+    
+    /* ========== 輸入框霓虹系統 ========== */
+    input, textarea, select {
+      background: rgba(5, 10, 30, 0.98) !important;
+      border: 3px solid rgba(100, 116, 139, 0.4) !important;
+      color: white !important;
+      font-weight: 700 !important;
+      border-radius: 18px !important;
+      padding: 16px 20px !important;
+      transition: all 0.3s ease !important;
+      font-size: 17px !important;
+      letter-spacing: 0.5px !important;
+    }
+    
+    input::placeholder, textarea::placeholder, select::placeholder {
+      color: rgba(148, 163, 184, 0.6) !important;
+      font-weight: 600 !important;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      background: rgba(5, 10, 30, 1) !important;
+      border-color: rgba(102, 126, 234, 0.9) !important;
+      outline: none !important;
+      box-shadow: 
+        0 0 0 5px rgba(102, 126, 234, 0.2),
+        0 0 40px rgba(102, 126, 234, 0.5),
+        0 0 80px rgba(118, 75, 162, 0.3) !important;
+    }
+    
+    select {
+      cursor: pointer !important;
+      appearance: none !important;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23667eea' stroke-width='3'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 14px center !important;
+      padding-right: 45px !important;
+    }
+    
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(-10px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    
+    .card { 
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .card:hover { 
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* 科技風格狀態標籤 */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    
+    .status-badge:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    
+    .status-icon {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: bold;
+    }
+    
+    /* 狀態顏色 */
+    .status-todo {
+      background: rgba(139, 92, 246, 0.15);
+      border-color: #8b5cf6;
+      color: #a78bfa;
+    }
+    .status-todo .status-icon { background: #8b5cf6; color: white; }
+    
+    .status-inprogress {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: #06b6d4;
+      color: #22d3ee;
+    }
+    .status-inprogress .status-icon { background: #06b6d4; color: white; }
+    
+    .status-done {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: #22c55e;
+      color: #4ade80;
+    }
+    .status-done .status-icon { background: #22c55e; color: white; }
+    
+    .priority-high {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: #ef4444;
+      color: #f87171;
+    }
+    .priority-high .status-icon { background: #ef4444; color: white; }
+    
+    .priority-medium {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #f59e0b;
+      color: #fbbf24;
+    }
+    .priority-medium .status-icon { background: #f59e0b; color: white; }
+    
+    .priority-low {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: #3b82f6;
+      color: #60a5fa;
+    }
+    .priority-low .status-icon { background: #3b82f6; color: white; }
+    
+    .event-meeting {
+      background: rgba(168, 85, 247, 0.15);
+      border-color: #a855f7;
+      color: #c084fc;
+    }
+    .event-meeting .status-icon { background: #a855f7; color: white; }
+    
+    .event-inspection {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: #22c55e;
+      color: #4ade80;
+    }
+    .event-inspection .status-icon { background: #22c55e; color: white; }
+    
+    .type-solar {
+      background: rgba(251, 191, 36, 0.15);
+      border-color: #fbbf24;
+      color: #fcd34d;
+    }
+    .type-solar .status-icon { background: #fbbf24; color: #000; }
+    
+    .type-storage {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: #22c55e;
+      color: #4ade80;
+    }
+    .type-storage .status-icon { background: #22c55e; color: white; }
+    
+    .glass {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+    }
+    
+    .glass-light {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+    }
+    
+    /* 卡片霓虹效果 */
+    .neon-card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      border-radius: 24px;
+      transition: all 0.3s ease;
+    }
+    
+    .neon-card:hover {
+      border-color: rgba(102, 126, 234, 0.5);
+      box-shadow: 
+        0 0 20px rgba(102, 126, 234, 0.3),
+        0 0 40px rgba(118, 75, 162, 0.1);
+      transform: translateY(-4px);
+    }
+    
+    /* Modal 霓虹效果 */
+    .neon-modal {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      border-radius: 32px;
+      box-shadow: 
+        0 0 30px rgba(102, 126, 234, 0.3),
+        0 0 60px rgba(118, 75, 162, 0.2);
+    }
+    
+    .neon-border {
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    }
+    
+    .neon-text {
+      text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+    }
+    
+    .tech-progress {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .tech-progress-bar {
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+      transition: width 0.5s ease;
+    }
+    
+    /* 深色主題覆蓋 */
+    input, textarea, select {
+      background: rgba(15, 23, 42, 0.8) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      color: white !important;
+    }
+    
+    input::placeholder, textarea::placeholder {
+      color: rgba(156, 163, 175, 0.6) !important;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      border-color: #3b82f6 !important;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script>
+    console.log('🚀 系統啟動中...');
+    
+    // ==================== SVG 圖標庫 ====================
+    const Icons = {
+      dashboard: `<svg class="tech-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>`,
+      
+      project: `<svg class="tech-icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`,
+      
+      calendar: `<svg class="tech-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+      
+      chart: `<svg class="tech-icon" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>`,
+      
+      logout: `<svg class="tech-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
+      
+      plus: `<svg class="tech-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+      
+      trash: `<svg class="tech-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`,
+      
+      edit: `<svg class="tech-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+      
+      check: `<svg class="tech-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`,
+      
+      x: `<svg class="tech-icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+      
+      clock: `<svg class="tech-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+      
+      alert: `<svg class="tech-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+      
+      target: `<svg class="tech-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`,
+      
+      zap: `<svg class="tech-icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+      
+      layers: `<svg class="tech-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`,
+      
+      users: `<svg class="tech-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+      
+      box: `<svg class="tech-icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+      
+      cpu: `<svg class="tech-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>`,
+      
+      mapPin: `<svg class="tech-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+      
+      video: `<svg class="tech-icon" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
+      
+      search: `<svg class="tech-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+      
+      filter: `<svg class="tech-icon" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>`,
+      
+      chevronDown: `<svg class="tech-icon" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>`,
+      
+      chevronRight: `<svg class="tech-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>`,
+      
+      activity: `<svg class="tech-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+      
+      trendingUp: `<svg class="tech-icon" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
+      
+      send: `<svg class="tech-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`,
+      
+      sun: `<svg class="tech-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+      
+      battery: `<svg class="tech-icon" viewBox="0 0 24 24"><rect x="1" y="6" width="18" height="12" rx="2" ry="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>`,
+      
+      eye: `<svg class="tech-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+      
+      settings: `<svg class="tech-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.2-14.8l-4.2 4.2m0 5.2l-4.2 4.2M23 12h-6m-6 0H1m17.8-5.2l-4.2 4.2m0 5.2l-4.2 4.2"/></svg>`,
+    };
+    
+    // ==================== 施作類型設定 ====================
+    const PROJECT_TYPES = {
+      '光電': [
+        '屋頂型(RC型)',
+        '屋頂型(浪板型)',
+        '屋頂型(混和型)',
+        '地面型(PC樁)',
+        '地面型(基礎)',
+        '地面型(自重塊)',
+        '地面型(風雨球場)',
+        '地面型(停車場)',
+        '農舍',
+        '漁電共生'
+      ],
+      '儲能': [
+        '表前儲能',
+        '表後儲能',
+        '家用儲能'
+      ]
+    };
+    
+    // ==================== 數據管理 ====================
+    const Storage = {
+      get(key) {
+        try {
+          const data = localStorage.getItem(key);
+          return data ? JSON.parse(data) : null;
+        } catch (e) {
+          console.error('讀取失敗:', e);
+          return null;
+        }
+      },
+      set(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+          console.error('保存失敗:', e);
+        }
+      },
+      remove(key) {
+        localStorage.removeItem(key);
+      }
+    };
+    
+    // ==================== 全局狀態 ====================
+    const State = {
+      currentUser: Storage.get('currentUser'),
+      currentPage: 'dashboard',
+      projects: Storage.get('projects') || [],
+      stages: Storage.get('stages') || [],
+      tasks: Storage.get('tasks') || [],
+      accounts: Storage.get('accounts') || [],
+      events: Storage.get('events') || [], // 會議和勘查事件
+      currentCalendarDate: new Date(),
+      projectSearchQuery: '', // 專案搜尋查詢
+      
+      save() {
+        Storage.set('currentUser', this.currentUser);
+        Storage.set('projects', this.projects);
+        Storage.set('stages', this.stages);
+        Storage.set('tasks', this.tasks);
+        Storage.set('accounts', this.accounts);
+        Storage.set('events', this.events);
+      },
+      
+      logout() {
+        this.currentUser = null;
+        Storage.remove('currentUser');
+      }
+    };
+    
+    // ==================== 工具函數 ====================
+    function generateId() {
+      return Date.now().toString() + Math.random().toString(36).substr(2, 9);
+    }
+    
+    function formatDate(date) {
+      if (!date) return '';
+      const d = new Date(date);
+      return d.toLocaleDateString('zh-TW');
+    }
+    
+    function isOverdue(dueDate, status) {
+      if (!dueDate || status === 'done') return false;
+      return new Date(dueDate) < new Date();
+    }
+    
+    function getProjectProgress(projectId) {
+      const projectTasks = State.tasks.filter(t => t.projectId === projectId);
+      if (projectTasks.length === 0) return 0;
+      
+      // 計算有上傳檔案的附件數量
+      const completed = projectTasks.filter(t => t.fileInfo && t.fileInfo.data).length;
+      return Math.round((completed / projectTasks.length) * 100);
+    }
+    
+    // 行事曆相關函數
+    function getCalendarDays(date) {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startingDayOfWeek = firstDay.getDay();
+      
+      const days = [];
+      for (let i = 0; i < startingDayOfWeek; i++) {
+        days.push(null);
+      }
+      for (let i = 1; i <= daysInMonth; i++) {
+        days.push(new Date(year, month, i));
+      }
+      return days;
+    }
+    
+    function isToday(date) {
+      if (!date) return false;
+      const today = new Date();
+      return date.getDate() === today.getDate() &&
+             date.getMonth() === today.getMonth() &&
+             date.getFullYear() === today.getFullYear();
+    }
+    
+    function getEventsForDate(date) {
+      if (!date) return [];
+      const dateStr = date.toISOString().split('T')[0];
+      return State.events.filter(event => event.date === dateStr);
+    }
+    
+    // ==================== UI 渲染 ====================
+    function render() {
+      const root = document.getElementById('root');
+      
+      if (!State.currentUser) {
+        root.innerHTML = renderLogin();
+      } else {
+        root.innerHTML = renderMainApp();
+        attachEventListeners();
+        // 強制修改統計卡片樣式
+        fixStatCardStyles();
+      }
+    }
+    
+    // 清理統計卡片樣式
+    function fixStatCardStyles() {
+      setTimeout(() => {
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach(card => {
+          // 移除所有 Tailwind 漸層類
+          const classes = Array.from(card.classList);
+          classes.forEach(cls => {
+            if (cls.includes('bg-gradient') || cls.includes('from-') || cls.includes('to-')) {
+              card.classList.remove(cls);
+            }
+          });
+        });
+        console.log('✅ 統計卡片樣式已清理');
+      }, 50);
+    }
+    
+    // ==================== 登入頁面 ====================
+    function renderLogin() {
+      return `
+        <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
+          <div class="glass rounded-3xl shadow-2xl p-8 w-full max-w-md fade-in neon-border">
+            <div class="text-center mb-8">
+              <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center neon-border">
+                <svg class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+              </div>
+              <h1 class="text-4xl font-bold text-white mb-2 neon-text">專案管理系統</h1>
+              <p class="text-blue-400">v7.0 科技版</p>
+            </div>
+            
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">姓名</label>
+                <input type="text" id="loginName" class="w-full px-4 py-3 rounded-xl" placeholder="輸入您的姓名">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">電子郵件</label>
+                <input type="email" id="loginEmail" class="w-full px-4 py-3 rounded-xl" placeholder="your@email.com">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">密碼</label>
+                <input type="password" id="loginPassword" class="w-full px-4 py-3 rounded-xl" placeholder="••••••••">
+              </div>
+              
+              <button onclick="handleLogin()" class="w-full py-3 neon-button hover:shadow-blue-500/50 transition-all">
+                登入 / 註冊
+              </button>
+            </div>
+            
+            <div class="mt-6 p-4 glass-light rounded-xl">
+              <p class="text-sm text-gray-300 text-center">
+                <span class="font-semibold text-blue-400">✨ 第一次使用？</span><br>
+                輸入資料即可自動註冊！<br>
+                <span class="text-xs text-gray-400 mt-2 block">第一個註冊的用戶會自動成為管理員</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    // ==================== 主應用 ====================
+    function renderMainApp() {
+      return `
+        <div class="flex min-h-screen">
+          <!-- 側邊欄 -->
+          <div class="w-64 glass flex flex-col border-r border-gray-700">
+            <div class="p-6 border-b border-gray-700">
+              <h1 class="text-xl font-bold text-white flex items-center gap-2">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                專案管理
+              </h1>
+              <div class="mt-3 flex items-center gap-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold neon-border">
+                  ${State.currentUser.name.charAt(0).toUpperCase()}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-semibold text-white truncate">${State.currentUser.name}</p>
+                  <p class="text-xs text-gray-400 truncate">${State.currentUser.email}</p>
+                </div>
+              </div>
+            </div>
+            
+            <nav class="flex-1 p-4 space-y-2">
+              <button onclick="changePage('dashboard')" class="nav-button ${State.currentPage === 'dashboard' ? 'active' : ''} w-full flex items-center gap-3 text-gray-300 font-medium">
+                ${Icons.dashboard}
+                <span class="font-semibold">儀表板</span>
+              </button>
+              
+              <button onclick="changePage('projects')" class="nav-button ${State.currentPage === 'projects' ? 'active' : ''} w-full flex items-center gap-3 text-gray-300 font-medium">
+                ${Icons.project}
+                <span class="font-semibold">專案管理</span>
+              </button>
+              
+              <button onclick="changePage('calendar')" class="nav-button ${State.currentPage === 'calendar' ? 'active' : ''} w-full flex items-center gap-3 text-gray-300 font-medium">
+                ${Icons.calendar}
+                <span class="font-semibold">會議行事曆</span>
+              </button>
+              
+              <button onclick="changePage('reports')" class="nav-button ${State.currentPage === 'reports' ? 'active' : ''} w-full flex items-center gap-3 text-gray-300 font-medium">
+                ${Icons.chart}
+                <span class="font-semibold">統計報表</span>
+              </button>
+            </nav>
+            
+            <div class="p-4 border-t border-gray-700">
+              <button onclick="handleLogout()" class="nav-button w-full flex items-center gap-3 text-gray-300 font-medium">
+                ${Icons.logout}
+                <span class="font-semibold">登出</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- 主內容區 -->
+          <div class="flex-1 overflow-auto">
+            <div class="p-8">
+              ${renderCurrentPage()}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderCurrentPage() {
+      switch(State.currentPage) {
+        case 'dashboard': return renderDashboard();
+        case 'projects': return renderProjects();
+        case 'calendar': return renderCalendar();
+        case 'reports': return renderReports();
+        default: return renderDashboard();
+      }
+    }
+    
+    // ==================== 儀表板 ====================
+    function renderDashboard() {
+      const overdueTasks = State.tasks.filter(t => isOverdue(t.dueDate, t.status));
+      const dueSoonTasks = State.tasks.filter(t => {
+        if (!t.dueDate || t.status === 'done') return false;
+        const dueDate = new Date(t.dueDate);
+        const now = new Date();
+        const diffDays = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+        return diffDays >= 0 && diffDays <= 7;
+      });
+      
+      return `
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-3xl font-bold text-white">儀表板</h2>
+              <p class="text-white mt-1">專案逾期概覽</p>
+            </div>
+          </div>
+          
+          <!-- 統計卡片 -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="stat-card stat-card-red">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-4xl">${Icons.alert}</span>
+                <span class="text-sm text-red-400 font-semibold">緊急</span>
+              </div>
+              <div class="text-4xl font-bold text-red-400">${overdueTasks.length}</div>
+              <div class="text-sm text-red-300 mt-1">已逾期任務</div>
+            </div>
+            
+            <div class="stat-card stat-card-yellow">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-4xl">${Icons.clock}</span>
+                <span class="text-sm text-amber-400 font-semibold">注意</span>
+              </div>
+              <div class="text-4xl font-bold text-amber-400">${dueSoonTasks.length}</div>
+              <div class="text-sm text-amber-300 mt-1">即將逾期 (7天內)</div>
+            </div>
+            
+            <div class="stat-card stat-card-blue">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-4xl">${Icons.chart}</span>
+                <span class="text-sm text-blue-400 font-semibold">總覽</span>
+              </div>
+              <div class="text-4xl font-bold text-blue-400">${State.projects.length}</div>
+              <div class="text-sm text-blue-300 mt-1">進行中專案</div>
+            </div>
+          </div>
+          
+          <!-- 逾期任務列表 -->
+          ${overdueTasks.length > 0 ? `
+            <div class="glass rounded-xl shadow-lg border-2 border-red-200 p-6 mb-6">
+              <h3 class="text-xl font-bold text-red-600 mb-4 flex items-center gap-2">
+                <span>${Icons.alert}</span> 已逾期任務
+              </h3>
+              <div class="space-y-3">
+                ${overdueTasks.map(task => {
+                  const project = State.projects.find(p => p.id === task.projectId);
+                  const daysOverdue = Math.floor((new Date() - new Date(task.dueDate)) / (1000 * 60 * 60 * 24));
+                  return `
+                    <div class="p-4 bg-red-50 border-2 border-red-300 rounded-xl hover:shadow-md transition-all">
+                      <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                          <div class="flex items-center gap-2 mb-2">
+                            <h4 class="font-semibold text-white font-semibold">${task.title}</h4>
+                            <span class="px-2 py-1 bg-red-200 text-red-800 text-xs rounded-full font-semibold">
+                              逾期 ${daysOverdue} 天
+                            </span>
+                          </div>
+                          <div class="text-sm text-white">
+                            ${project ? `${Icons.project} ${project.name}` : ''} | ${Icons.calendar} 到期: ${task.dueDate}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          ` : ''}
+          
+          <!-- 即將逾期 -->
+          ${dueSoonTasks.length > 0 ? `
+            <div class="glass rounded-xl shadow-lg border-2 border-amber-200 p-6">
+              <h3 class="text-xl font-bold text-amber-600 mb-4 flex items-center gap-2">
+                <span>${Icons.clock}</span> 即將逾期任務
+              </h3>
+              <div class="space-y-3">
+                ${dueSoonTasks.map(task => {
+                  const project = State.projects.find(p => p.id === task.projectId);
+                  const daysLeft = Math.ceil((new Date(task.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
+                  return `
+                    <div class="p-4 bg-amber-50 border-2 border-amber-300 rounded-xl hover:shadow-md transition-all">
+                      <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                          <div class="flex items-center gap-2 mb-2">
+                            <h4 class="font-semibold text-white font-semibold">${task.title}</h4>
+                            <span class="px-2 py-1 bg-amber-200 text-amber-800 text-xs rounded-full font-semibold">
+                              剩 ${daysLeft} 天
+                            </span>
+                          </div>
+                          <div class="text-sm text-white">
+                            ${project ? `${Icons.project} ${project.name}` : ''} | ${Icons.calendar} 到期: ${task.dueDate}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          ` : ''}
+          
+          ${overdueTasks.length === 0 && dueSoonTasks.length === 0 ? `
+            <div class="glass rounded-xl shadow-lg p-12 text-center">
+              <div class="text-6xl mb-4">${Icons.check}</div>
+              <h3 class="text-2xl font-bold text-white mb-2">太棒了！</h3>
+              <p class="text-white">目前沒有逾期或即將逾期的任務</p>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+    
+    // ==================== 專案管理 ====================
+    function renderProjects() {
+      const searchQuery = State.projectSearchQuery || '';
+      const filteredProjects = State.projects.filter(p => 
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.code?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      
+      return `
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-4">
+              <div class="text-4xl">${Icons.project}</div>
+              <h2 class="text-3xl font-bold text-white">專案概覽</h2>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <input 
+                  type="text" 
+                  placeholder="搜尋專案..." 
+                  value="${searchQuery}"
+                  oninput="searchProjects(this.value)"
+                  class="px-4 py-2 pl-10 bg-white border-2 border-gray-600 rounded-xl text-gray-300 w-64"
+                >
+                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  ${Icons.search}
+                </div>
+              </div>
+              <button onclick="showAddProjectModal()" class="neon-button flex items-center gap-2">
+                ${Icons.plus}
+                <span>新增專案</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="space-y-4">
+            ${filteredProjects.length === 0 ? `
+              <div class="glass rounded-xl shadow-lg p-12 text-center">
+                <div class="text-6xl mb-4">${searchQuery ? Icons.search : Icons.project}</div>
+                <h3 class="text-xl font-bold text-white mb-2">${searchQuery ? '找不到符合的專案' : '尚無專案'}</h3>
+                <p class="text-white mb-4">${searchQuery ? '請嘗試其他關鍵字' : '點擊上方按鈕新增您的第一個專案'}</p>
+              </div>
+            ` : filteredProjects.map(project => {
+              const projectTasks = State.tasks.filter(t => t.projectId === project.id);
+              const projectStages = State.stages.filter(s => s.projectId === project.id);
+              const progress = getProjectProgress(project.id);
+              
+              const getTypeIcon = (mainType) => {
+                if (mainType === '光電') return '☀️';
+                if (mainType === '儲能') return '🔋';
+                return Icons.project;
+              };
+              
+              const typeIcon = getTypeIcon(project.mainType);
+              
+              return `
+                <div 
+                  class="project-card glass rounded-xl shadow-lg hover:shadow-xl transition-all p-4 border-2 border-gray-700 hover:border-indigo-400 cursor-pointer"
+                  onclick="showProjectStages('${project.id}')"
+                >
+                  <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <!-- 桌面版：橫向排列 -->
+                    <div class="project-info flex flex-col md:flex-row items-start md:items-center gap-2 flex-1 w-full">
+                      <!-- 圖標 -->
+                      <div class="text-2xl w-8 flex-shrink-0">${typeIcon}</div>
+                      
+                      <!-- 基本資訊 -->
+                      <div class="flex flex-col md:flex-row items-start md:items-center gap-2 flex-1 w-full">
+                        <h3 class="project-tag text-xs font-bold text-white w-full md:w-[140px]">${project.name}</h3>
+                        ${project.code ? `
+                          <span class="project-tag px-2 py-1 glass rounded-lg text-gray-400 border border-gray-700 text-xs w-auto md:w-[110px] text-center">
+                            ${project.code}
+                          </span>
+                        ` : `<div class="hidden md:block md:w-[110px]"></div>`}
+                        ${project.mainType ? `
+                          <div class="project-tag px-2 py-1 glass rounded-lg border border-gray-700 w-auto md:w-[120px]">
+                            <div class="text-xs font-semibold text-white leading-tight text-center">${project.mainType}</div>
+                            ${project.subType ? `<div class="text-[10px] text-gray-400 leading-tight text-center">${project.subType}</div>` : ''}
+                          </div>
+                        ` : `<div class="hidden md:block md:w-[120px]"></div>`}
+                        ${project.capacity ? `
+                          <div class="project-tag px-3 py-1 glass rounded-lg text-white border border-gray-700 w-auto md:w-[100px] flex flex-col items-center justify-center">
+                            <div class="flex items-center gap-1">
+                              ${Icons.zap}
+                              <span class="text-sm font-bold">${project.capacity.replace(/[A-Za-z]+$/, '')}</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400">${project.capacity.match(/[A-Za-z]+$/)?.[0] || ''}</span>
+                          </div>
+                        ` : `<div class="hidden md:block md:w-[100px]"></div>`}
+                      </div>
+                      
+                      <!-- 進度條 -->
+                      <div class="progress-container flex-1 w-full md:max-w-xs md:ml-auto">
+                        <div class="flex justify-between text-xs mb-1">
+                          <span class="text-white font-medium">完成度</span>
+                          <span class="font-bold text-blue-400 text-sm">${progress}%</span>
+                        </div>
+                        <div class="w-full bg-gray-600 rounded-full h-2">
+                          <div 
+                            class="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-500"
+                            style="width: ${progress}%"
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- 編輯和刪除按鈕 -->
+                    <div class="action-buttons flex items-center gap-2 w-full md:w-auto justify-end md:ml-3" style="position: relative; z-index: 100;">
+                      <button 
+                        onclick="event.stopPropagation(); editProject('${project.id}')" 
+                        class="text-indigo-500 hover:text-indigo-700 p-2 rounded-lg hover:bg-indigo-50 transition-all flex-shrink-0"
+                        title="編輯專案"
+                      >
+                        <svg class="tech-icon" viewBox="0 0 24 24" style="pointer-events: none;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                      </button>
+                      <button 
+                        onclick="(function(e, id){ e.stopPropagation(); console.log('刪除點擊:', id); if(confirm('確定要刪除此專案嗎？')) { console.log('確認刪除'); deleteProject(id); } })(event, '${project.id}')"
+                        class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all flex-shrink-0"
+                        title="刪除專案"
+                        style="cursor: pointer; position: relative; z-index: 200;"
+                      >
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="pointer-events: none;">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+    
+    // 搜尋專案
+    function searchProjects(query) {
+      State.projectSearchQuery = query;
+      render();
+    }
+    
+    // ==================== 會議行事曆 ====================
+    function renderCalendar() {
+      const currentDate = State.currentCalendarDate;
+      const calendarDays = getCalendarDays(currentDate);
+      
+      // 統計事件類型
+      const meetingCount = State.events.filter(e => e.type === 'meeting').length;
+      const inspectionCount = State.events.filter(e => e.type === 'inspection').length;
+      
+      return `
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-3xl font-bold text-white">會議行事曆</h2>
+              <p class="text-white mt-1">管理會議和現勘時間</p>
+            </div>
+            <button onclick="showAddEventModal()" class="neon-button flex items-center gap-2">
+              ${Icons.plus}
+              <span>新增事件</span>
+            </button>
+          </div>
+          
+          <!-- 統計卡片 -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="stat-card stat-card-blue">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-5xl">${Icons.calendar}</div>
+              </div>
+              <div class="stat-number text-blue-400">${State.events.length}</div>
+              <div class="stat-label text-blue-300">總事件數</div>
+            </div>
+            
+            <div class="stat-card stat-card-purple">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-5xl">${Icons.target}</div>
+              </div>
+              <div class="stat-number text-purple-400">${meetingCount}</div>
+              <div class="stat-label text-purple-300">會議</div>
+            </div>
+            
+            <div class="stat-card stat-card-green">
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-5xl">${Icons.search}</div>
+              </div>
+              <div class="stat-number text-green-400">${inspectionCount}</div>
+              <div class="stat-label text-green-300">現勘</div>
+            </div>
+          </div>
+          
+          <!-- 行事曆 -->
+          <div class="glass p-6 mb-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-bold">
+                ${currentDate.getFullYear()}年 ${currentDate.getMonth() + 1}月
+              </h3>
+              <div class="flex gap-2">
+                <button onclick="changeCalendarMonth(-1)" class="neon-button neon-button-sm">
+                  ← 上個月
+                </button>
+                <button onclick="goToToday()" class="neon-button neon-button-sm">
+                  今天
+                </button>
+                <button onclick="changeCalendarMonth(1)" class="neon-button neon-button-sm">
+                  下個月 →
+                </button>
+              </div>
+            </div>
+            
+            <!-- 星期標題 -->
+            <div class="grid grid-cols-7 gap-2 mb-2">
+              ${['日', '一', '二', '三', '四', '五', '六'].map(day => `
+                <div class="text-center text-sm font-semibold text-gray-300 py-2 glass-light rounded-lg">
+                  ${day}
+                </div>
+              `).join('')}
+            </div>
+            
+            <!-- 日期格子 -->
+            <div class="grid grid-cols-7 gap-2">
+              ${calendarDays.map(date => {
+                if (!date) {
+                  return '<div class="min-h-[100px] glass-light rounded-lg"></div>';
+                }
+                
+                const dayEvents = getEventsForDate(date);
+                const isTodayDate = isToday(date);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                return `
+                  <div onclick="showDayEvents('${dateStr}')" class="min-h-[100px] p-2 border-2 ${
+                    isTodayDate ? 'border-indigo-400 bg-indigo-50' : 'border-gray-700 glass'
+                  } rounded-lg hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer">
+                    <div class="text-sm font-semibold ${isTodayDate ? 'text-blue-400' : 'text-gray-300'} mb-1">
+                      ${date.getDate()}
+                    </div>
+                    <div class="space-y-1">
+                      ${dayEvents.slice(0, 3).map(event => {
+                        const icon = event.type === 'meeting' ? '${Icons.target}' : '${Icons.search}';
+                        const bgColor = event.type === 'meeting' ? 'bg-purple-100 text-purple-300' : 'bg-green-100 text-green-300';
+                        return `
+                          <div class="text-xs px-1 py-0.5 ${bgColor} rounded truncate" title="${event.title}">
+                            ${icon} ${event.title}
+                          </div>
+                        `;
+                      }).join('')}
+                      ${dayEvents.length > 3 ? `
+                        <div class="text-xs text-gray-300 text-center">+${dayEvents.length - 3}</div>
+                      ` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    // ==================== 統計報表 (跟之前一樣) ====================
+    function renderReports() {
+      const totalTasks = State.tasks.length;
+      const completedTasks = State.tasks.filter(t => t.status === 'done').length;
+      const inProgressTasks = State.tasks.filter(t => t.status === 'inprogress').length;
+      const todoTasks = State.tasks.filter(t => t.status === 'todo').length;
+      
+      const projectsByType = {};
+      State.projects.forEach(p => {
+        const key = p.mainType || '其他';
+        projectsByType[key] = (projectsByType[key] || 0) + 1;
+      });
+      
+      return `
+        <div>
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-3xl font-bold text-white">統計報表</h2>
+              <p class="text-white mt-1">專案數據分析</p>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card stat-card-blue">
+              <div class="text-4xl mb-2">${Icons.chart}</div>
+              <div class="text-3xl font-bold text-blue-400">${State.projects.length}</div>
+              <div class="text-sm text-blue-300">專案總數</div>
+            </div>
+            
+            <div class="stat-card stat-card-purple">
+              <div class="text-4xl mb-2">${Icons.edit}</div>
+              <div class="text-3xl font-bold text-purple-400">${totalTasks}</div>
+              <div class="text-sm text-purple-300">任務總數</div>
+            </div>
+            
+            <div class="stat-card stat-card-green">
+              <div class="text-4xl mb-2">${Icons.check}</div>
+              <div class="text-3xl font-bold text-green-400">${completedTasks}</div>
+              <div class="text-sm text-green-300">已完成</div>
+            </div>
+            
+            <div class="stat-card stat-card-yellow">
+              <div class="text-4xl mb-2">⏳</div>
+              <div class="text-3xl font-bold text-amber-400">${inProgressTasks}</div>
+              <div class="text-sm text-amber-300">進行中</div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="glass p-6">
+              <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <span>${Icons.chart}</span> 專案類型分布
+              </h3>
+              <div class="space-y-3">
+                ${Object.keys(projectsByType).length > 0 ? Object.entries(projectsByType).map(([type, count]) => {
+                  const percentage = Math.round((count / State.projects.length) * 100);
+                  const icon = type === '光電' ? '☀️' : type === '儲能' ? '🔋' : '${Icons.project}';
+                  const color = type === '光電' ? 'bg-yellow-500' : type === '儲能' ? 'bg-green-500' : 'bg-blue-500';
+                  
+                  return `
+                    <div>
+                      <div class="flex justify-between text-sm mb-1">
+                        <span class="flex items-center gap-2">
+                          <span>${icon}</span>
+                          <span>${type}</span>
+                        </span>
+                        <span class="font-semibold">${count} (${percentage}%)</span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="${color} h-2 rounded-full transition-all" style="width: ${percentage}%"></div>
+                      </div>
+                    </div>
+                  `;
+                }).join('') : '<p class="text-gray-300 text-center py-4">尚無專案數據</p>'}
+              </div>
+            </div>
+            
+            <div class="glass p-6">
+              <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <span>${Icons.trendingUp}</span> 任務狀態分布
+              </h3>
+              <div class="space-y-3">
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span>待處理</span>
+                    <span class="font-semibold">${todoTasks} (${totalTasks > 0 ? Math.round(todoTasks/totalTasks*100) : 0}%)</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="glass-light0 h-2 rounded-full" style="width: ${totalTasks > 0 ? todoTasks/totalTasks*100 : 0}%"></div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span>進行中</span>
+                    <span class="font-semibold">${inProgressTasks} (${totalTasks > 0 ? Math.round(inProgressTasks/totalTasks*100) : 0}%)</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-indigo-500 h-2 rounded-full" style="width: ${totalTasks > 0 ? inProgressTasks/totalTasks*100 : 0}%"></div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div class="flex justify-between text-sm mb-1">
+                    <span>已完成</span>
+                    <span class="font-semibold">${completedTasks} (${totalTasks > 0 ? Math.round(completedTasks/totalTasks*100) : 0}%)</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-green-500 h-2 rounded-full" style="width: ${totalTasks > 0 ? completedTasks/totalTasks*100 : 0}%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="glass p-6">
+            <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <span>📋</span> 專案概覽
+            </h3>
+            <div class="space-y-3">
+              ${State.projects.length > 0 ? State.projects.map(project => {
+                const progress = getProjectProgress(project.id);
+                const icon = project.mainType === '光電' ? '☀️' : project.mainType === '儲能' ? '🔋' : '${Icons.project}';
+                const gradient = project.mainType === '光電' ? 'from-yellow-400 to-orange-500' : 
+                               project.mainType === '儲能' ? 'from-green-400 to-emerald-500' : 
+                               'from-blue-400 to-indigo-500';
+                
+                return `
+                  <div class="p-4 border-2 border-gray-700 rounded-xl hover:border-indigo-300 transition-all">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-xl">${icon}</span>
+                        <div>
+                          <span class="text-xs font-semibold text-white">${project.name}</span>
+                          ${project.capacity ? `<span class="ml-2 text-xs text-white">${Icons.zap} ${project.capacity}</span>` : ''}
+                        </div>
+                      </div>
+                      <span class="font-semibold text-blue-400">${progress}%</span>
+                    </div>
+                    ${project.subType ? `
+                      <div class="text-xs text-white mb-2">${project.mainType} - ${project.subType}</div>
+                    ` : ''}
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div class="bg-gradient-to-r ${gradient} h-2 rounded-full transition-all" style="width: ${progress}%"></div>
+                    </div>
+                  </div>
+                `;
+              }).join('') : '<p class="text-gray-300 text-center py-4">尚無專案數據</p>'}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    // ==================== 事件處理函數 ====================
+    
+    function handleLogin() {
+      const name = document.getElementById('loginName')?.value.trim();
+      const email = document.getElementById('loginEmail')?.value.trim();
+      const password = document.getElementById('loginPassword')?.value.trim();
+      
+      if (!name || !email || !password) {
+        alert('請填寫所有欄位');
+        return;
+      }
+      
+      let account = State.accounts.find(a => a.email === email);
+      
+      if (!account) {
+        const isFirstUser = State.accounts.length === 0;
+        account = {
+          id: generateId(),
+          name: name,
+          email: email,
+          password: password,
+          role: isFirstUser ? 'admin' : 'member',
+          createdAt: new Date().toISOString()
+        };
+        State.accounts.push(account);
+        console.log('${Icons.check} 新用戶註冊:', account.name, isFirstUser ? '(管理員)' : '(成員)');
+      } else {
+        if (account.password !== password) {
+          alert('密碼錯誤');
+          return;
+        }
+        console.log('${Icons.check} 用戶登入:', account.name);
+      }
+      
+      State.currentUser = {
+        id: account.id,
+        name: account.name,
+        email: account.email,
+        role: account.role
+      };
+      
+      State.save();
+      render();
+    }
+    
+    function handleLogout() {
+      if (confirm('確定要登出嗎？')) {
+        State.logout();
+        render();
+      }
+    }
+    
+    function changePage(page) {
+      State.currentPage = page;
+      render();
+    }
+    
+    // 行事曆相關函數
+    function changeCalendarMonth(offset) {
+      const newDate = new Date(State.currentCalendarDate);
+      newDate.setMonth(newDate.getMonth() + offset);
+      State.currentCalendarDate = newDate;
+      render();
+    }
+    
+    function goToToday() {
+      State.currentCalendarDate = new Date();
+      render();
+    }
+    
+    function showAddEventModal(presetDate = null) {
+      const today = presetDate || new Date().toISOString().split('T')[0];
+      
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <div class="p-6 border-b border-gray-700 glass-light">
+              <h3 class="text-2xl font-bold text-white">新增事件</h3>
+            </div>
+            
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">事件類型 *</label>
+                <select id="eventType" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl">
+                  <option value="meeting">${Icons.target} 會議</option>
+                  <option value="inspection">${Icons.search} 現勘</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">事件標題 *</label>
+                <input type="text" id="eventTitle" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl" placeholder="例：彰化溪湖案場會議">
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-300 mb-2">日期 *</label>
+                  <input type="date" id="eventDate" value="${today}" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl">
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-300 mb-2">時間 *</label>
+                  <input type="time" id="eventTime" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl">
+                </div>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">地點</label>
+                <input type="text" id="eventLocation" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" placeholder="例：彰化縣溪湖鎮">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">定位點</label>
+                <input type="text" id="eventGPS" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" placeholder="例：24.0519, 120.4818 或 Google Maps 連結">
+                <p class="text-xs text-gray-300 mt-1">💡 提示：可輸入經緯度座標或貼上 Google Maps 連結</p>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">關聯專案</label>
+                <select id="eventProject" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl">
+                  <option value="">無關聯專案</option>
+                  ${State.projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">備註</label>
+                <textarea id="eventNotes" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl" rows="3" placeholder="輸入備註事項..."></textarea>
+              </div>
+            </div>
+            
+            <div class="p-6 border-t glass-light flex gap-3">
+              <button onclick="addEvent()" class="flex-1 neon-button-success flex items-center justify-center gap-2">
+                確認新增
+              </button>
+              <button onclick="this.closest('.fixed').remove()" class="flex-1 neon-button-danger flex items-center justify-center gap-2">
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    function addEvent() {
+      const type = document.getElementById('eventType')?.value;
+      const title = document.getElementById('eventTitle')?.value.trim();
+      const date = document.getElementById('eventDate')?.value;
+      const time = document.getElementById('eventTime')?.value;
+      const location = document.getElementById('eventLocation')?.value.trim();
+      const gps = document.getElementById('eventGPS')?.value.trim();
+      const projectId = document.getElementById('eventProject')?.value;
+      const notes = document.getElementById('eventNotes')?.value.trim();
+      
+      if (!title || !date || !time) {
+        alert('請填寫必填欄位（標題、日期、時間）');
+        return;
+      }
+      
+      const event = {
+        id: generateId(),
+        type: type,
+        title: title,
+        date: date,
+        time: time,
+        location: location,
+        gps: gps,
+        projectId: projectId,
+        notes: notes,
+        createdBy: State.currentUser.id,
+        createdAt: new Date().toISOString()
+      };
+      
+      State.events.push(event);
+      State.save();
+      
+      document.querySelector('.fixed')?.remove();
+      render();
+      
+      console.log('${Icons.check} 新增事件:', event.title);
+    }
+    
+    function deleteEvent(eventId) {
+      if (confirm('確定要刪除此事件嗎？')) {
+        State.events = State.events.filter(e => e.id !== eventId);
+        State.save();
+        render();
+      }
+    }
+    
+    // 顯示當日行程彈窗
+    function showDayEvents(dateStr) {
+      const date = new Date(dateStr + 'T00:00:00');
+      const dayEvents = State.events.filter(e => e.date === dateStr).sort((a, b) => a.time.localeCompare(b.time));
+      
+      const dateDisplay = date.toLocaleDateString('zh-TW', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        weekday: 'long'
+      });
+      
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-2xl w-full max-h-[90vh] overflow-auto" onclick="event.stopPropagation()">
+            <div class="p-6 border-b glass-light border-gray-700 sticky top-0">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-2xl font-bold text-white">${dateDisplay}</h3>
+                  <p class="text-sm text-white mt-1">${dayEvents.length} 個事件</p>
+                </div>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white p-2 rounded-lg hover:glass transition-all">
+                  ✖️
+                </button>
+              </div>
+            </div>
+            
+            <div class="p-6">
+              ${dayEvents.length === 0 ? `
+                <div class="text-center py-12">
+                  <div class="text-6xl mb-4">${Icons.calendar}</div>
+                  <h3 class="text-xl font-bold text-white mb-2">這天沒有安排事件</h3>
+                  <p class="text-white mb-4">點擊下方按鈕新增事件</p>
+                  <button onclick="this.closest('.fixed').remove(); showAddEventModal('${dateStr}')" class="neon-button">
+                    ${Icons.plus}
+                    <span>新增事件</span>
+                  </button>
+                </div>
+              ` : `
+                <div class="space-y-4">
+                  ${dayEvents.map(event => {
+                    const project = State.projects.find(p => p.id === event.projectId);
+                    const icon = event.type === 'meeting' ? '${Icons.target}' : '${Icons.search}';
+                    const bgColor = event.type === 'meeting' ? 'from-purple-50 to-pink-50 border-purple-200' : 'from-green-50 to-emerald-50 border-green-200';
+                    const typeText = event.type === 'meeting' ? '會議' : '現勘';
+                    
+                    return `
+                      <div class="p-4 bg-gradient-to-r ${bgColor} border-2 rounded-xl hover:shadow-md transition-all">
+                        <div class="flex items-start justify-between">
+                          <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-3">
+                              <div class="w-12 h-12 glass rounded-xl flex items-center justify-center text-2xl shadow-sm">
+                                ${icon}
+                              </div>
+                              <div>
+                                <h4 class="font-bold text-lg text-white font-semibold">${event.title}</h4>
+                                <p class="text-sm text-white">${typeText}</p>
+                              </div>
+                            </div>
+                            
+                            <div class="ml-15 space-y-2">
+                              <div class="flex items-center gap-2 text-sm text-gray-300 font-medium">
+                                <span class="w-5">${Icons.clock}</span>
+                                <span class="font-semibold">${event.time}</span>
+                              </div>
+                              
+                              ${event.location ? `
+                                <div class="flex items-center gap-2 text-sm text-gray-300 font-medium">
+                                  <span class="w-5">${Icons.mapPin}</span>
+                                  <span>${event.location}</span>
+                                </div>
+                              ` : ''}
+                              
+                              ${event.gps ? `
+                                <div class="flex items-start gap-2 text-sm">
+                                  <span class="w-5 mt-0.5">${Icons.mapPin}</span>
+                                  <div class="flex-1">
+                                    ${event.gps.includes('http') || event.gps.includes('maps') ? `
+                                      <a href="${event.gps}" target="_blank" class="text-blue-600 hover:text-blue-800 underline break-all">
+                                        開啟地圖 →
+                                      </a>
+                                    ` : `
+                                      <span class="text-gray-300 font-mono text-xs">${event.gps}</span>
+                                      <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.gps)}" target="_blank" class="ml-2 text-blue-600 hover:text-blue-800 text-xs">
+                                        在 Google Maps 中查看 →
+                                      </a>
+                                    `}
+                                  </div>
+                                </div>
+                              ` : ''}
+                              
+                              ${project ? `
+                                <div class="flex items-center gap-2 text-sm text-gray-300 font-medium">
+                                  <span class="w-5">${Icons.project}</span>
+                                  <span>${project.name}</span>
+                                  ${project.capacity ? `<span class="text-xs text-gray-300">(${project.capacity})</span>` : ''}
+                                </div>
+                              ` : ''}
+                              
+                              ${event.notes ? `
+                                <div class="mt-3 p-3 glass rounded-lg">
+                                  <div class="flex items-start gap-2 text-sm">
+                                    <span class="w-5 mt-0.5">${Icons.edit}</span>
+                                    <span class="flex-1 text-gray-300 font-medium">${event.notes}</span>
+                                  </div>
+                                </div>
+                              ` : ''}
+                            </div>
+                          </div>
+                          
+                          <button onclick="deleteEventAndCloseModal('${event.id}')" class="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all ml-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+                
+                <div class="mt-6 pt-6 border-t">
+                  <button onclick="this.closest('.fixed').remove(); showAddEventModal('${dateStr}')" class="w-full neon-button">
+                    ${Icons.plus} 新增更多事件
+                  </button>
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    function deleteEventAndCloseModal(eventId) {
+      if (confirm('確定要刪除此事件嗎？')) {
+        State.events = State.events.filter(e => e.id !== eventId);
+        State.save();
+        document.querySelectorAll('.fixed').forEach(el => el.remove());
+        render();
+      }
+    }
+    
+    // 專案相關函數
+    function showAddProjectModal() {
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <div class="p-6 border-b border-gray-700 glass-light sticky top-0">
+              <h3 class="text-2xl font-bold text-white">新增專案</h3>
+            </div>
+            
+            <div class="p-6 space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">專案編碼</label>
+                <input type="text" id="projectCode" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl" placeholder="例：PRJ-2024-001">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                  專案名稱 <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="projectName" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl" placeholder="例：彰化溪湖太陽能電廠">
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                  施作類型 - 大項 <span class="text-red-500">*</span>
+                </label>
+                <select id="projectMainType" onchange="updateSubTypeOptions()" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl">
+                  <option value="">請選擇大項</option>
+                  <option value="光電">☀️ 光電</option>
+                  <option value="儲能">🔋 儲能</option>
+                </select>
+              </div>
+              
+              <div id="subTypeContainer" style="display:none;">
+                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                  施作類型 - 小項 <span class="text-red-500">*</span>
+                </label>
+                <select id="projectSubType" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl">
+                  <option value="">請先選擇大項</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">
+                  設置容量 <span class="text-red-500">*</span>
+                </label>
+                <div class="flex gap-2">
+                  <input type="text" id="projectCapacity" class="flex-1 px-4 py-3 border-2 border-gray-600 rounded-xl" placeholder="例：100">
+                  <select id="projectCapacityUnit" class="px-4 py-3 border-2 border-gray-600 rounded-xl">
+                    <option value="kW">kW (千瓦)</option>
+                    <option value="MW" selected>MW (百萬瓦)</option>
+                    <option value="kWh">kWh (千瓦時)</option>
+                    <option value="MWh">MWh (百萬瓦時)</option>
+                  </select>
+                </div>
+                <p class="text-xs text-gray-300 mt-1">💡 提示：光電案場通常使用 MW，儲能案場通常使用 MWh</p>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">專案描述</label>
+                <textarea id="projectDesc" class="w-full px-4 py-3 border-2 border-gray-600 rounded-xl" rows="4" placeholder="輸入專案的詳細描述、地點、特殊需求等..."></textarea>
+              </div>
+            </div>
+            
+            <div class="p-6 border-t glass-light flex gap-3">
+              <button onclick="addProject()" class="flex-1 neon-button-success flex items-center justify-center gap-2">
+                ${Icons.check} 確認新增
+              </button>
+              <button onclick="this.closest('.fixed').remove()" class="flex-1 neon-button-danger flex items-center justify-center gap-2">
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    function updateSubTypeOptions() {
+      const mainType = document.getElementById('projectMainType').value;
+      const subTypeSelect = document.getElementById('projectSubType');
+      const subTypeContainer = document.getElementById('subTypeContainer');
+      
+      if (!mainType) {
+        subTypeContainer.style.display = 'none';
+        return;
+      }
+      
+      subTypeContainer.style.display = 'block';
+      subTypeSelect.innerHTML = '<option value="">請選擇小項</option>';
+      
+      const subTypes = PROJECT_TYPES[mainType] || [];
+      subTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        subTypeSelect.appendChild(option);
+      });
+    }
+    
+    function addProject() {
+      const code = document.getElementById('projectCode')?.value.trim();
+      const name = document.getElementById('projectName')?.value.trim();
+      const mainType = document.getElementById('projectMainType')?.value;
+      const subType = document.getElementById('projectSubType')?.value;
+      const capacityValue = document.getElementById('projectCapacity')?.value.trim();
+      const capacityUnit = document.getElementById('projectCapacityUnit')?.value;
+      const description = document.getElementById('projectDesc')?.value.trim();
+      
+      if (!name) {
+        alert('❌ 請輸入專案名稱');
+        return;
+      }
+      
+      if (!mainType) {
+        alert('❌ 請選擇施作類型大項');
+        return;
+      }
+      
+      if (!subType) {
+        alert('❌ 請選擇施作類型小項');
+        return;
+      }
+      
+      if (!capacityValue) {
+        alert('❌ 請輸入設置容量');
+        return;
+      }
+      
+      const capacity = `${capacityValue} ${capacityUnit}`;
+      
+      const project = {
+        id: generateId(),
+        code: code,
+        name: name,
+        mainType: mainType,
+        subType: subType,
+        capacity: capacity,
+        description: description,
+        createdBy: State.currentUser.id,
+        createdAt: new Date().toISOString()
+      };
+      
+      State.projects.push(project);
+      
+      // 自動創建「圖面資料」主資料夾
+      const drawingFolder = {
+        id: generateId(),
+        name: '圖面資料',
+        projectId: project.id,
+        order: 0,
+        createdAt: new Date().toISOString()
+      };
+      State.stages.push(drawingFolder);
+      console.log('✅ 創建圖面資料主資料夾:', drawingFolder);
+      
+      // 在「圖面資料」內創建 8 個子資料夾
+      const subFolders = [
+        '0.資訊統整',
+        '1.竣工圖面',
+        '2.材料資訊',
+        '3.評估圖面',
+        '4.掛件圖面',
+        '5.細協圖面',
+        '6.縣府圖面',
+        '7.違建圖面',
+        '8.水保圖面'
+      ];
+      
+      console.log('🔄 開始創建 8 個子資料夾...');
+      subFolders.forEach((folderName, index) => {
+        const subFolder = {
+          id: generateId(),
+          name: folderName,
+          projectId: project.id,
+          parentStageId: drawingFolder.id,
+          order: index,
+          createdAt: new Date().toISOString()
+        };
+        State.stages.push(subFolder);
+        console.log(`  ✅ 創建子資料夾 ${index + 1}/9:`, subFolder.name, 'parentStageId:', drawingFolder.id);
+      });
+      console.log('✅ 8 個子資料夾創建完成');
+      console.log('📊 總階段數:', State.stages.length);
+      
+      // 自動創建「文書資料」資料夾
+      const documentFolder = {
+        id: generateId(),
+        name: '文書資料',
+        projectId: project.id,
+        order: 1,
+        createdAt: new Date().toISOString()
+      };
+      State.stages.push(documentFolder);
+      console.log('✅ 創建文書資料資料夾:', documentFolder);
+      
+      State.save();
+      console.log('💾 資料已保存到 localStorage');
+      
+      document.querySelector('.fixed')?.remove();
+      render();
+      
+      console.log('✓ 新增專案:', project.name, `(${project.mainType} - ${project.subType}, ${project.capacity})`);
+      console.log('✓ 自動創建: 圖面資料(含8個子資料夾) + 文書資料');
+    }
+    
+    // ==================== 編輯專案 ====================
+    function editProject(projectId) {
+      const project = State.projects.find(p => p.id === projectId);
+      if (!project) return;
+      
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-2xl w-full p-6" onclick="event.stopPropagation()">
+            <h3 class="text-2xl font-bold text-white mb-6">編輯專案</h3>
+            
+            <div class="space-y-4">
+              <!-- 專案編碼 -->
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">專案編碼 *</label>
+                <input 
+                  type="text" 
+                  id="editProjectCode" 
+                  value="${project.code || ''}"
+                  class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl bg-slate-800 text-white" 
+                  placeholder="例：PRJ-001"
+                >
+              </div>
+              
+              <!-- 專案名稱 -->
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">專案名稱 *</label>
+                <input 
+                  type="text" 
+                  id="editProjectName" 
+                  value="${project.name}"
+                  class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl bg-slate-800 text-white" 
+                  placeholder="輸入專案名稱"
+                >
+              </div>
+              
+              <!-- 施作類型 -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-300 mb-2">施作類型</label>
+                  <select 
+                    id="editProjectMainType" 
+                    class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl bg-slate-800 text-white"
+                    onchange="this.value === '光電' ? document.getElementById('editProjectSubTypeGroup').innerHTML = '<option value=\\"屋頂型\\">屋頂型</option><option value=\\"地面型\\">地面型</option><option value=\\"水面型\\">水面型</option>' : this.value === '儲能' ? document.getElementById('editProjectSubTypeGroup').innerHTML = '<option value=\\"表前儲能\\">表前儲能</option><option value=\\"表後儲能\\">表後儲能</option>' : document.getElementById('editProjectSubTypeGroup').innerHTML = ''"
+                  >
+                    <option value="">選擇類型</option>
+                    <option value="光電" ${project.mainType === '光電' ? 'selected' : ''}>光電</option>
+                    <option value="儲能" ${project.mainType === '儲能' ? 'selected' : ''}>儲能</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label class="block text-sm font-semibold text-gray-300 mb-2">子類型</label>
+                  <select 
+                    id="editProjectSubType" 
+                    class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl bg-slate-800 text-white"
+                  >
+                    <optgroup id="editProjectSubTypeGroup">
+                      ${project.mainType === '光電' ? `
+                        <option value="屋頂型" ${project.subType === '屋頂型' ? 'selected' : ''}>屋頂型</option>
+                        <option value="地面型" ${project.subType === '地面型' ? 'selected' : ''}>地面型</option>
+                        <option value="水面型" ${project.subType === '水面型' ? 'selected' : ''}>水面型</option>
+                      ` : project.mainType === '儲能' ? `
+                        <option value="表前儲能" ${project.subType === '表前儲能' ? 'selected' : ''}>表前儲能</option>
+                        <option value="表後儲能" ${project.subType === '表後儲能' ? 'selected' : ''}>表後儲能</option>
+                      ` : ''}
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- 設置容量 -->
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">設置容量</label>
+                <input 
+                  type="text" 
+                  id="editProjectCapacity" 
+                  value="${project.capacity || ''}"
+                  class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl bg-slate-800 text-white" 
+                  placeholder="例：100 MW"
+                >
+              </div>
+              
+              <!-- 專案描述 -->
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">專案描述</label>
+                <textarea 
+                  id="editProjectDesc" 
+                  class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl bg-slate-800 text-white" 
+                  rows="3"
+                  placeholder="輸入專案描述..."
+                >${project.description || ''}</textarea>
+              </div>
+              
+              <!-- 按鈕 -->
+              <div class="flex gap-2 pt-4">
+                <button onclick="saveEditProject('${projectId}')" class="flex-1 neon-button-success flex items-center justify-center gap-2">
+                  ${Icons.check}
+                  <span>儲存變更</span>
+                </button>
+                <button onclick="this.closest('.fixed').remove()" class="flex-1 neon-button-danger flex items-center justify-center gap-2">
+                  ${Icons.x}
+                  <span>取消</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    function saveEditProject(projectId) {
+      const code = document.getElementById('editProjectCode')?.value.trim();
+      const name = document.getElementById('editProjectName')?.value.trim();
+      const mainType = document.getElementById('editProjectMainType')?.value;
+      const subType = document.getElementById('editProjectSubType')?.value;
+      const capacity = document.getElementById('editProjectCapacity')?.value.trim();
+      const description = document.getElementById('editProjectDesc')?.value.trim();
+      
+      if (!code || !name) {
+        alert('請填寫專案編碼和名稱');
+        return;
+      }
+      
+      // 檢查編碼是否重複
+      const duplicate = State.projects.find(p => p.code === code && p.id !== projectId);
+      if (duplicate) {
+        alert('此專案編碼已存在');
+        return;
+      }
+      
+      // 更新專案
+      const projectIndex = State.projects.findIndex(p => p.id === projectId);
+      if (projectIndex !== -1) {
+        State.projects[projectIndex] = {
+          ...State.projects[projectIndex],
+          code,
+          name,
+          mainType,
+          subType,
+          capacity,
+          description
+        };
+        
+        State.save();
+        render();
+        document.querySelector('.fixed')?.remove();
+        
+        console.log('${Icons.check} 專案已更新:', name);
+      }
+    }
+    
+    function deleteProject(projectId) {
+      console.log('刪除專案被調用:', projectId);
+      
+      if (!confirm('確定要刪除此專案嗎？這將同時刪除所有相關階段和任務。')) {
+        console.log('用戶取消刪除');
+        return;
+      }
+      
+      try {
+        const beforeCount = State.projects.length;
+        State.projects = State.projects.filter(p => p.id !== projectId);
+        State.tasks = State.tasks.filter(t => t.projectId !== projectId);
+        State.stages = State.stages.filter(s => s.projectId !== projectId);
+        
+        console.log(`專案數量: ${beforeCount} → ${State.projects.length}`);
+        
+        State.save();
+        render();
+        
+        console.log('✓ 專案已刪除並重新渲染');
+      } catch (error) {
+        console.error('刪除專案時發生錯誤:', error);
+        alert('刪除失敗：' + error.message);
+      }
+    }
+    
+    // ==================== 顯示專案階段 ====================
+    function showProjectStages(projectId) {
+      const project = State.projects.find(p => p.id === projectId);
+      if (!project) return;
+      
+      // 只顯示頂層資料夾（沒有 parentStageId 的階段）
+      const projectStages = State.stages.filter(s => s.projectId === projectId && !s.parentStageId);
+      const typeIcon = project.mainType === '光電' ? '☀️' : project.mainType === '儲能' ? '🔋' : '📁';
+      
+      console.log('📋 顯示專案階段');
+      console.log('📋 專案ID:', projectId);
+      console.log('📋 專案資料:', project);
+      console.log('📋 所有階段:', State.stages);
+      console.log('📋 專案階段:', projectStages);
+      console.log('📋 頂層資料夾數量:', projectStages.length);
+      
+      // 找到圖面資料和文書資料
+      const drawingStage = projectStages.find(s => s.name === '圖面資料');
+      const documentStage = projectStages.find(s => s.name === '文書資料');
+      
+      console.log('📋 圖面資料:', drawingStage);
+      console.log('📋 文書資料:', documentStage);
+      
+      if (!drawingStage) {
+        console.warn('⚠️ 找不到圖面資料！');
+      }
+      if (!documentStage) {
+        console.warn('⚠️ 找不到文書資料！');
+      }
+      
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-5xl w-full max-h-[90vh] overflow-auto" onclick="event.stopPropagation()">
+            <div class="p-6 border-b sticky top-0 glass-light border-gray-700">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3 flex-1">
+                  <!-- 圖標 -->
+                  <span class="text-2xl">${typeIcon}</span>
+                  
+                  <!-- 專案名稱 -->
+                  <h3 class="text-xs font-bold text-white">${project.name}</h3>
+                  
+                  <!-- 所有標籤在同一行 -->
+                  <div class="flex items-center gap-2">
+                    ${project.mainType ? `
+                      <div class="px-2 py-1 glass rounded-lg border border-gray-700">
+                        <div class="text-xs font-semibold text-white leading-tight">${project.mainType}</div>
+                        ${project.subType ? `<div class="text-[10px] text-gray-400 leading-tight">${project.subType}</div>` : ''}
+                      </div>
+                    ` : ''}
+                    ${project.capacity ? `
+                      <span class="px-2 py-1 glass rounded-lg text-white border border-gray-700 text-xs font-semibold flex items-center gap-1">
+                        ${Icons.zap} ${project.capacity}
+                      </span>
+                    ` : ''}
+                    ${project.code ? `
+                      <span class="px-2 py-1 glass rounded-lg text-gray-400 border border-gray-700 text-xs">
+                        ${project.code}
+                      </span>
+                    ` : ''}
+                  </div>
+                </div>
+                
+                <!-- 紅框：圖面資料和文書資料快速按鈕 -->
+                <div class="flex items-center gap-2 mr-3">
+                  ${drawingStage ? `
+                    <button 
+                      onclick="event.stopPropagation(); showStageTasks('${drawingStage.id}', '${project.name}', '圖面資料')" 
+                      class="px-4 py-2 glass rounded-lg border-2 border-indigo-500 hover:bg-indigo-500 transition-all text-sm font-bold text-white flex items-center gap-2"
+                      title="圖面資料"
+                    >
+                      📐 圖面資料
+                    </button>
+                  ` : ''}
+                  ${documentStage ? `
+                    <button 
+                      onclick="event.stopPropagation(); showStageTasks('${documentStage.id}', '${project.name}', '文書資料')" 
+                      class="px-4 py-2 glass rounded-lg border-2 border-purple-500 hover:bg-purple-500 transition-all text-sm font-bold text-white flex items-center gap-2"
+                      title="文書資料"
+                    >
+                      📄 文書資料
+                    </button>
+                  ` : ''}
+                </div>
+                
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white p-2">
+                  ✖️
+                </button>
+              </div>
+            </div>
+            
+            <!-- 新增階段區域 -->
+            <div class="p-6">
+              <button 
+                onclick="showAddStageModal('${project.id}', null)" 
+                class="w-full neon-button flex items-center justify-center gap-2 py-6 text-lg"
+              >
+                ${Icons.plus}
+                <span>新增階段</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    // ==================== 顯示階段任務 ====================
+    function showStageTasks(stageId, projectName, stageName) {
+      const stage = State.stages.find(s => s.id === stageId);
+      if (!stage) return;
+      
+      // 檢查是否有子資料夾
+      const subFolders = State.stages.filter(s => s.parentStageId === stageId);
+      const stageTasks = State.tasks.filter(t => t.stageId === stageId);
+      
+      console.log('📂 查看資料夾:', stageName);
+      console.log('📂 資料夾ID:', stageId);
+      console.log('📂 找到子資料夾數量:', subFolders.length);
+      console.log('📂 所有階段:', State.stages);
+      console.log('📂 子資料夾:', subFolders);
+      
+      // 如果是圖面資料，強制顯示子資料夾界面
+      const isDrawingFolder = stageName === '圖面資料';
+      
+      // 如果有子資料夾，或者是圖面資料，顯示子資料夾列表
+      if (subFolders.length > 0 || isDrawingFolder) {
+        const modal = `
+          <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+            <div class="neon-modal max-w-4xl w-full max-h-[90vh] overflow-auto" onclick="event.stopPropagation()">
+              <div class="p-6 border-b sticky top-0 glass-light border-gray-700">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <h3 class="text-lg font-bold text-white">${projectName}</h3>
+                    <span class="text-gray-400">/</span>
+                    <h3 class="text-lg font-bold text-white">${stageName}</h3>
+                    <span class="px-2 py-1 glass rounded-full text-gray-300 border border-gray-700 text-xs flex items-center gap-1">
+                      📁 ${subFolders.length} 個資料夾
+                    </span>
+                  </div>
+                  <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white p-2">
+                    ✖️
+                  </button>
+                </div>
+              </div>
+              
+              <div class="p-6">
+                ${subFolders.length === 0 && isDrawingFolder ? `
+                  <div class="text-center py-12 bg-gradient-to-br from-blue-900/20 to-purple-900/20 rounded-xl border-2 border-dashed border-indigo-500/50">
+                    <div class="text-6xl mb-4">📁</div>
+                    <h3 class="text-xl font-bold text-white mb-2">尚未創建子資料夾</h3>
+                    <p class="text-gray-300 mb-4">圖面資料應包含 8 個子資料夾</p>
+                    <button 
+                      onclick="createDrawingSubfolders('${stageId}', '${stage.projectId}')"
+                      class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all font-semibold"
+                    >
+                      ⚡ 自動創建 8 個子資料夾
+                    </button>
+                  </div>
+                ` : ''}
+                
+                <div class="space-y-1.5">
+                  ${subFolders.map((folder, index) => {
+                    return `
+                      <div class="glass border border-gray-700 rounded-lg p-3 hover:border-indigo-500 hover:bg-indigo-500/5 transition-all group">
+                        <div class="flex items-center justify-between gap-2">
+                          <div class="flex items-center gap-2 flex-1 cursor-pointer" onclick="showStageTasks('${folder.id}', '${projectName}', '${folder.name}')">
+                            <div class="text-xl">📁</div>
+                            <h4 class="font-semibold text-white text-sm">${folder.name}</h4>
+                          </div>
+                          <button 
+                            onclick="(function(e, id){ e.stopPropagation(); console.log('刪除資料夾:', id); if(confirm('確定要刪除此資料夾嗎？')) { deleteStage(id); } })(event, '${folder.id}')"
+                            class="text-red-500 hover:text-red-700 p-1.5 hover:bg-red-500/10 rounded-lg transition-all flex-shrink-0"
+                            style="cursor: pointer; z-index: 100;"
+                            title="刪除資料夾"
+                          >
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="pointer-events: none;">
+                              <polyline points="3 6 5 6 21 6"/>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modal);
+        return;
+      }
+      
+      // 如果沒有子資料夾，顯示任務列表
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-4xl w-full max-h-[90vh] overflow-auto" onclick="event.stopPropagation()">
+            <div class="p-6 border-b sticky top-0 glass-light border-gray-700">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <h3 class="text-lg font-bold text-white">${projectName}</h3>
+                  <span class="text-gray-400">/</span>
+                  <h3 class="text-lg font-bold text-white">${stageName}</h3>
+                  <span class="px-2 py-1 glass rounded-full text-gray-300 border border-gray-700 text-xs flex items-center gap-1">
+                    📎 ${stageTasks.length} 個附件
+                  </span>
+                </div>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white p-2">
+                  ✖️
+                </button>
+              </div>
+            </div>
+            
+            <div class="p-6">
+              <button onclick="showAddTaskToStageModal('${stageId}')" class="w-full mb-4 neon-button flex items-center justify-center gap-2 py-6 text-lg">
+                ${Icons.plus}
+                <span>新增附件</span>
+              </button>
+              
+              <div class="space-y-3">
+                ${stageTasks.length === 0 ? `
+                  <div class="text-center py-12">
+                    <div class="text-6xl mb-4">📎</div>
+                    <p class="text-white text-lg">尚無附件</p>
+                  </div>
+                ` : stageTasks.map(task => {
+                  const fileSize = task.fileInfo ? (task.fileInfo.size / 1024).toFixed(1) : null;
+                  const displayName = task.version ? `${task.title}-${task.version}` : task.title;
+                  return `
+                    <div class="p-4 border-2 border-gray-700 glass rounded-xl hover:border-indigo-500 hover:shadow-lg transition-all group">
+                      <div class="flex items-start justify-between gap-4">
+                        <div class="flex-1 cursor-pointer min-w-0" onclick="openAttachment('${task.id}')">
+                          <div class="flex items-center gap-3 mb-2">
+                            <h4 class="font-semibold text-white text-lg">${displayName}</h4>
+                          </div>
+                          ${task.fileInfo ? `
+                            <div class="flex items-center gap-2 text-sm">
+                              <span class="px-3 py-1.5 bg-indigo-500/20 text-indigo-300 rounded-lg border border-indigo-500/30 flex items-center gap-2">
+                                📎 ${task.fileInfo.name}
+                                <span class="text-xs text-indigo-400">(${fileSize} KB)</span>
+                              </span>
+                            </div>
+                          ` : ''}
+                          <div class="flex gap-3 text-xs text-gray-400 mt-2">
+                            <span class="text-gray-400">${new Date(task.createdAt).toLocaleDateString('zh-TW')}</span>
+                          </div>
+                        </div>
+                        <div class="flex flex-col gap-2 flex-shrink-0">
+                          <button onclick="event.stopPropagation(); showAttachmentDetail('${task.id}')" class="text-indigo-400 hover:text-indigo-300 p-2 hover:bg-indigo-500/10 rounded-lg transition-all" title="查看詳情">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <line x1="12" y1="16" x2="12" y2="12"></line>
+                              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                          </button>
+                          <button 
+                            onclick="(function(e, id){ e.stopPropagation(); console.log('刪除附件:', id); if(confirm('確定要刪除此附件嗎？')) { deleteTask(id); } })(event, '${task.id}')"
+                            class="text-red-500 hover:text-red-700 p-2 hover:bg-red-500/10 rounded-lg transition-all" 
+                            title="刪除"
+                            style="cursor: pointer; position: relative; z-index: 100;"
+                          >
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="pointer-events: none;">
+                              <polyline points="3 6 5 6 21 6"/>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    // ==================== 新增階段 Modal ====================
+    function showAddStageModal(projectId) {
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-md w-full p-6" onclick="event.stopPropagation()">
+            <h3 class="text-2xl font-bold text-white mb-4">新增階段</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">階段名稱 *</label>
+                <input type="text" id="stageName" class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl" placeholder="例：規劃階段、設計階段、施工階段">
+              </div>
+              <div class="flex gap-2">
+                <button onclick="addStage('${projectId}')" class="flex-1 neon-button-success flex items-center justify-center gap-2">
+                  ${Icons.check}
+                  <span>確認新增</span>
+                </button>
+                <button onclick="this.closest('.fixed').remove()" class="flex-1 neon-button-danger flex items-center justify-center gap-2">
+                  ${Icons.x}
+                  <span>取消</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    function addStage(projectId) {
+      const name = document.getElementById('stageName')?.value.trim();
+      
+      if (!name) {
+        alert('請輸入階段名稱');
+        return;
+      }
+      
+      const stage = {
+        id: generateId(),
+        name: name,
+        projectId: projectId,
+        order: State.stages.filter(s => s.projectId === projectId).length,
+        createdAt: new Date().toISOString()
+      };
+      
+      State.stages.push(stage);
+      
+      // 如果創建的是「圖面資料」，自動創建 8 個子資料夾
+      if (name === '圖面資料') {
+        const subFolders = [
+          '0.資訊統整',
+          '1.竣工圖面',
+          '2.材料資訊',
+          '3.評估圖面',
+          '4.掛件圖面',
+          '5.細協圖面',
+          '6.縣府圖面',
+          '7.違建圖面',
+          '8.水保圖面'
+        ];
+        
+        subFolders.forEach((folderName, index) => {
+          const subFolder = {
+            id: generateId(),
+            name: folderName,
+            projectId: projectId,
+            parentStageId: stage.id,  // 指向父資料夾
+            order: index,
+            createdAt: new Date().toISOString()
+          };
+          State.stages.push(subFolder);
+        });
+        
+        console.log('✓ 自動創建 8 個子資料夾於圖面資料');
+      }
+      
+      saveData();
+      
+      // 關閉所有 modal 並重新顯示
+      document.querySelectorAll('.fixed').forEach(el => el.remove());
+      showProjectStages(projectId);
+    }
+    
+    // ==================== 新增任務到階段 Modal ====================
+    function showAddTaskToStageModal(stageId) {
+      const stage = State.stages.find(s => s.id === stageId);
+      const project = State.projects.find(p => p.id === stage.projectId);
+      
+      // 根據資料夾名稱生成建議的附件名稱格式
+      let suggestedFormat = '';
+      if (stage.name.includes('資訊統整')) {
+        suggestedFormat = `${project.name}_資訊統整_`;
+      } else if (stage.name.includes('竣工')) {
+        suggestedFormat = `${project.name}_竣工圖面_`;
+      } else if (stage.name.includes('材料')) {
+        suggestedFormat = `${project.name}_材料資訊_`;
+      } else if (stage.name.includes('評估')) {
+        suggestedFormat = `${project.name}_評估圖面_`;
+      } else if (stage.name.includes('掛件')) {
+        suggestedFormat = `${project.name}_掛件圖面_`;
+      } else if (stage.name.includes('細協')) {
+        suggestedFormat = `${project.name}_細協圖面_`;
+      } else if (stage.name.includes('縣府')) {
+        suggestedFormat = `${project.name}_縣府圖面_`;
+      } else if (stage.name.includes('違建')) {
+        suggestedFormat = `${project.name}_違建圖面_`;
+      } else if (stage.name.includes('水保')) {
+        suggestedFormat = `${project.name}_水保圖面_`;
+      } else {
+        suggestedFormat = `${project.name}_${stage.name}_`;
+      }
+      
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-md w-full p-6" onclick="event.stopPropagation()">
+            <h3 class="text-2xl font-bold text-white mb-4">新增附件</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">附件名稱 *</label>
+                <input type="text" id="taskTitle" value="${suggestedFormat}" class="w-full px-4 py-2 glass border-2 border-gray-600 rounded-xl text-white" placeholder="${suggestedFormat}">
+                <p class="text-xs text-indigo-400 mt-1">💡 已根據資料夾自動填入格式</p>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">版本 *</label>
+                <input type="text" id="taskVersion" value="V1.0" class="w-full px-4 py-2 glass border-2 border-gray-600 rounded-xl text-white" placeholder="例：V1.0, V2.1">
+                <p class="text-xs text-gray-400 mt-1">建議格式：V1.0, V2.0, V2.1...</p>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">上傳附件</label>
+                <div class="relative">
+                  <input 
+                    type="file" 
+                    id="fileUpload" 
+                    class="hidden"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.zip,.dwg"
+                    onchange="handleFileSelect(event)"
+                  >
+                  <button 
+                    onclick="document.getElementById('fileUpload').click()" 
+                    class="w-full px-4 py-3 glass border-2 border-dashed border-indigo-500 rounded-xl text-gray-300 hover:border-indigo-400 hover:bg-indigo-500/10 transition-all flex items-center justify-center gap-2"
+                  >
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                    <span id="fileLabel">點擊選擇檔案</span>
+                  </button>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">支援格式: PDF, Word, Excel, 圖片, ZIP, DWG</p>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="addTaskToStage('${stageId}')" class="flex-1 neon-button-success flex items-center justify-center gap-2">
+                  ${Icons.check}
+                  <span>確認新增</span>
+                </button>
+                <button onclick="this.closest('.fixed').remove()" class="flex-1 neon-button-danger flex items-center justify-center gap-2">
+                  ${Icons.x}
+                  <span>取消</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    // ==================== 處理檔案選擇 ====================
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const fileLabel = document.getElementById('fileLabel');
+        fileLabel.textContent = file.name;
+        fileLabel.classList.add('text-indigo-400', 'font-semibold');
+      }
+    }
+    
+    function addTaskToStage(stageId) {
+      const title = document.getElementById('taskTitle')?.value.trim();
+      const version = document.getElementById('taskVersion')?.value.trim();
+      const fileInput = document.getElementById('fileUpload');
+      const file = fileInput?.files[0];
+      
+      if (!title) {
+        alert('請輸入附件名稱');
+        return;
+      }
+      
+      if (!version) {
+        alert('請輸入版本號');
+        return;
+      }
+      
+      const stage = State.stages.find(s => s.id === stageId);
+      const project = State.projects.find(p => p.id === stage.projectId);
+      
+      // 如果有檔案，讀取並儲存為 Base64
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const task = {
+            id: generateId(),
+            title: title,
+            version: version,
+            projectId: stage.projectId,
+            stageId: stageId,
+            createdAt: new Date().toISOString(),
+            // 附件資訊（包含 Base64 內容）
+            fileInfo: {
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              uploadedAt: new Date().toISOString(),
+              data: e.target.result // Base64 資料
+            }
+          };
+          
+          State.tasks.push(task);
+          saveData();
+          
+          // 關閉所有 modal 並重新顯示
+          document.querySelectorAll('.fixed').forEach(el => el.remove());
+          showStageTasks(stageId, project.name, stage.name);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // 沒有檔案就直接儲存
+        const task = {
+          id: generateId(),
+          title: title,
+          version: version,
+          projectId: stage.projectId,
+          stageId: stageId,
+          createdAt: new Date().toISOString(),
+          fileInfo: null
+        };
+        
+        State.tasks.push(task);
+        saveData();
+        
+        // 關閉所有 modal 並重新顯示
+        document.querySelectorAll('.fixed').forEach(el => el.remove());
+        showStageTasks(stageId, project.name, stage.name);
+      }
+    }
+    
+    // ==================== 開啟附件 ====================
+    function openAttachment(taskId) {
+      const task = State.tasks.find(t => t.id === taskId);
+      if (!task) {
+        alert('找不到此附件');
+        return;
+      }
+      
+      if (!task.fileInfo || !task.fileInfo.data) {
+        alert('此附件尚未上傳檔案');
+        return;
+      }
+      
+      // 根據檔案類型決定如何開啟
+      const fileType = task.fileInfo.type;
+      const fileData = task.fileInfo.data;
+      
+      // PDF 和圖片可以直接在新分頁預覽
+      if (fileType.includes('pdf') || fileType.includes('image')) {
+        // 在新分頁開啟
+        const newWindow = window.open();
+        if (fileType.includes('pdf')) {
+          newWindow.document.write(`
+            <html>
+              <head>
+                <title>${task.fileInfo.name}</title>
+                <style>
+                  body { margin: 0; overflow: hidden; }
+                  iframe { width: 100vw; height: 100vh; border: none; }
+                </style>
+              </head>
+              <body>
+                <iframe src="${fileData}"></iframe>
+              </body>
+            </html>
+          `);
+        } else {
+          newWindow.document.write(`
+            <html>
+              <head>
+                <title>${task.fileInfo.name}</title>
+                <style>
+                  body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+                  img { max-width: 100%; max-height: 100vh; }
+                </style>
+              </head>
+              <body>
+                <img src="${fileData}" alt="${task.fileInfo.name}">
+              </body>
+            </html>
+          `);
+        }
+      } else {
+        // 其他檔案類型提供下載
+        const link = document.createElement('a');
+        link.href = fileData;
+        link.download = task.fileInfo.name;
+        link.click();
+      }
+    }
+    
+    // ==================== 顯示附件詳情 Modal ====================
+    function showAttachmentDetail(taskId) {
+      const task = State.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      
+      const project = State.projects.find(p => p.id === task.projectId);
+      const stage = State.stages.find(s => s.id === task.stageId);
+      const fileSize = task.fileInfo ? (task.fileInfo.size / 1024).toFixed(1) : null;
+      const displayName = task.version ? `${task.title}-${task.version}` : task.title;
+      
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-2xl w-full p-6" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-2xl font-bold text-white">附件詳情</h3>
+              <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white p-2">
+                ✖️
+              </button>
+            </div>
+            
+            <div class="space-y-4">
+              <!-- 附件名稱 -->
+              <div class="glass border border-gray-700 rounded-xl p-4">
+                <label class="block text-sm font-semibold text-gray-400 mb-2">附件名稱</label>
+                <p class="text-xl font-bold text-white">${displayName}</p>
+              </div>
+              
+              <!-- 版本資訊 -->
+              <div class="glass border border-gray-700 rounded-xl p-4">
+                <label class="block text-sm font-semibold text-gray-400 mb-2">版本</label>
+                <p class="text-lg font-semibold text-indigo-400">${task.version || 'N/A'}</p>
+              </div>
+              
+              <!-- 檔案資訊 -->
+              ${task.fileInfo ? `
+                <div class="glass border border-indigo-500/30 rounded-xl p-4 bg-indigo-500/5">
+                  <label class="block text-sm font-semibold text-gray-400 mb-3">上傳檔案</label>
+                  <div class="flex items-center gap-3 p-3 bg-indigo-500/10 rounded-lg border border-indigo-500/20 cursor-pointer hover:bg-indigo-500/20 transition-all" onclick="openAttachment('${task.id}')">
+                    <div class="text-3xl">📎</div>
+                    <div class="flex-1">
+                      <p class="font-semibold text-white">${task.fileInfo.name}</p>
+                      <div class="flex gap-3 text-xs text-gray-400 mt-1">
+                        <span>${fileSize} KB</span>
+                        <span>|</span>
+                        <span>${task.fileInfo.type || '未知類型'}</span>
+                        <span>|</span>
+                        <span>上傳於 ${new Date(task.fileInfo.uploadedAt).toLocaleString('zh-TW')}</span>
+                      </div>
+                    </div>
+                    <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                  </div>
+                  <p class="text-xs text-indigo-300 mt-2 text-center">點擊開啟附件</p>
+                </div>
+              ` : '<div class="text-center py-8 text-gray-400">尚未上傳檔案</div>'}
+              
+              <!-- 專案資訊 -->
+              <div class="grid grid-cols-2 gap-4">
+                <div class="glass border border-gray-700 rounded-xl p-4">
+                  <label class="block text-sm font-semibold text-gray-400 mb-2">所屬專案</label>
+                  <p class="text-white">${project?.name || 'N/A'}</p>
+                </div>
+                <div class="glass border border-gray-700 rounded-xl p-4">
+                  <label class="block text-sm font-semibold text-gray-400 mb-2">資料夾</label>
+                  <p class="text-white">${stage?.name || 'N/A'}</p>
+                </div>
+              </div>
+              
+              <!-- 時間資訊 -->
+              <div class="glass border border-gray-700 rounded-xl p-4">
+                <label class="block text-sm font-semibold text-gray-400 mb-2">創建時間</label>
+                <p class="text-white">${new Date(task.createdAt).toLocaleString('zh-TW')}</p>
+              </div>
+              
+              <!-- 操作按鈕 -->
+              <div class="flex gap-3 pt-4">
+                <button onclick="this.closest('.fixed').remove()" class="flex-1 px-4 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-all">
+                  關閉
+                </button>
+                <button onclick="if(confirm('確定要刪除此附件嗎？')) { deleteTask('${task.id}'); this.closest('.fixed').remove(); }" class="flex-1 neon-button-danger flex items-center justify-center gap-2">
+                  ${Icons.trash}
+                  <span>刪除附件</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    // ==================== 自動創建圖面資料子資料夾 ====================
+    function createDrawingSubfolders(parentStageId, projectId) {
+      console.log('⚡ 開始自動創建子資料夾...');
+      console.log('⚡ 父資料夾ID:', parentStageId);
+      console.log('⚡ 專案ID:', projectId);
+      
+      const subFolders = [
+        '0.資訊統整',
+        '1.竣工圖面',
+        '2.材料資訊',
+        '3.評估圖面',
+        '4.掛件圖面',
+        '5.細協圖面',
+        '6.縣府圖面',
+        '7.違建圖面',
+        '8.水保圖面'
+      ];
+      
+      subFolders.forEach((folderName, index) => {
+        const subFolder = {
+          id: generateId(),
+          name: folderName,
+          projectId: projectId,
+          parentStageId: parentStageId,
+          order: index,
+          createdAt: new Date().toISOString()
+        };
+        State.stages.push(subFolder);
+        console.log(`  ✅ 創建: ${folderName}`);
+      });
+      
+      saveData();
+      console.log('✅ 8 個子資料夾創建完成！');
+      
+      // 關閉當前 modal 並重新顯示
+      document.querySelectorAll('.fixed').forEach(el => el.remove());
+      
+      const project = State.projects.find(p => p.id === projectId);
+      showStageTasks(parentStageId, project.name, '圖面資料');
+    }
+    
+    function deleteStage(stageId) {
+      if (!confirm('確定要刪除此階段嗎？這將同時刪除階段內的所有任務。')) return;
+      
+      State.stages = State.stages.filter(s => s.id !== stageId);
+      State.tasks = State.tasks.filter(t => t.stageId !== stageId);
+      saveData();
+      
+      // 重新渲染
+      document.querySelectorAll('.fixed').forEach(el => el.remove());
+      render();
+    }
+    
+    function showProjectTasks(projectId) {
+      const project = State.projects.find(p => p.id === projectId);
+      if (!project) return;
+      
+      const projectTasks = State.tasks.filter(t => t.projectId === projectId);
+      const typeIcon = project.mainType === '光電' ? '☀️' : project.mainType === '儲能' ? '🔋' : '${Icons.project}';
+      
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-4xl w-full max-h-[90vh] overflow-auto" onclick="event.stopPropagation()">
+            <div class="p-6 border-b sticky top-0 glass-light border-gray-700">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3 flex-1">
+                  <!-- 圖標 -->
+                  <span class="text-2xl">${typeIcon}</span>
+                  
+                  <!-- 專案名稱 -->
+                  <h3 class="text-xs font-bold text-white">${project.name}</h3>
+                  
+                  <!-- 所有標籤在同一行 -->
+                  <div class="flex items-center gap-2">
+                    ${project.mainType ? `
+                      <div class="px-2 py-1 glass rounded-lg border border-gray-700 min-w-[80px]">
+                        <div class="text-xs font-semibold text-white leading-tight">${project.mainType}</div>
+                        ${project.subType ? `<div class="text-[10px] text-gray-400 leading-tight">${project.subType}</div>` : ''}
+                      </div>
+                    ` : ''}
+                    ${project.capacity ? `
+                      <span class="px-3 py-1 glass rounded-lg text-white border border-gray-700 text-xs font-semibold flex items-center gap-1 min-w-[90px] justify-center">
+                        ${Icons.zap} ${project.capacity}
+                      </span>
+                    ` : ''}
+                    ${project.code ? `
+                      <span class="px-2 py-1 glass rounded-lg text-gray-400 border border-gray-700 text-xs">
+                        ${project.code}
+                      </span>
+                    ` : ''}
+                    <span class="px-2 py-1 glass rounded-lg text-gray-300 border border-gray-700 text-xs flex items-center gap-1">
+                      ${Icons.edit} ${projectTasks.length} 個任務
+                    </span>
+                  </div>
+                </div>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-white p-2">
+                  ✖️
+                </button>
+              </div>
+            </div>
+            
+            <div class="p-6">
+              <button onclick="showAddTaskModal('${projectId}')" class="w-full mb-4 neon-button">
+                ${Icons.plus} 新增任務
+              </button>
+              
+              <div class="space-y-3">
+                ${projectTasks.length === 0 ? `
+                  <div class="text-center py-12">
+                    <div class="text-6xl mb-4">${Icons.edit}</div>
+                    <p class="text-white">尚無任務，點擊上方按鈕新增任務</p>
+                  </div>
+                ` : projectTasks.map(task => {
+                  const isOverdueTask = isOverdue(task.dueDate, task.status);
+                  return `
+                    <div class="p-4 border-2 ${isOverdueTask ? 'border-red-300 bg-red-50' : 'border-gray-700 glass'} rounded-xl hover:shadow-md transition-all">
+                      <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                          <div class="flex items-center gap-3 mb-2">
+                            <input type="checkbox" ${task.status === 'done' ? 'checked' : ''} onchange="toggleTaskStatus('${task.id}')" class="w-5 h-5 rounded">
+                            <h4 class="font-semibold ${task.status === 'done' ? 'line-through text-gray-400' : 'text-white'}">${task.title}</h4>
+                            ${isOverdueTask ? '<span class="px-2 py-1 bg-red-200 text-red-800 text-xs rounded-full font-semibold">逾期</span>' : ''}
+                          </div>
+                          ${task.description ? `<p class="text-sm text-white mb-2 ml-8">${task.description}</p>` : ''}
+                          <div class="flex gap-3 text-xs text-gray-300 ml-8">
+                            ${task.dueDate ? `<span>${Icons.calendar} ${task.dueDate}</span>` : ''}
+                            <span class="px-2 py-1 rounded ${
+                              task.status === 'done' ? 'bg-green-100 text-green-300' :
+                              task.status === 'inprogress' ? 'bg-blue-100 text-blue-700' :
+                              'bg-gray-100 text-gray-300'
+                            }">${
+                              task.status === 'done' ? '${Icons.check} 已完成' :
+                              task.status === 'inprogress' ? '⏳ 進行中' :
+                              '📋 待處理'
+                            }</span>
+                          </div>
+                        </div>
+                        <button onclick="deleteTask('${task.id}')" class="text-red-500 hover:text-red-700 p-2">
+                          ${Icons.trash}
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    function showAddTaskModal(projectId) {
+      const modal = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onclick="if(event.target===this) this.remove()">
+          <div class="neon-modal max-w-md w-full p-6" onclick="event.stopPropagation()">
+            <h3 class="text-2xl font-bold text-white mb-4">新增任務</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">任務標題 *</label>
+                <input type="text" id="taskTitle" class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl" placeholder="例：場地勘查">
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">任務描述</label>
+                <textarea id="taskDesc" class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl" rows="3" placeholder="輸入任務描述..."></textarea>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-300 mb-2">到期日期</label>
+                <input type="date" id="taskDueDate" class="w-full px-4 py-2 border-2 border-gray-600 rounded-xl">
+              </div>
+              <div class="flex gap-2">
+                <button onclick="addTask('${projectId}')" class="flex-1 neon-button-success font-semibold hover:shadow-lg">
+                  確認新增
+                </button>
+                <button onclick="this.closest('.fixed').remove()" class="flex-1 neon-button-danger flex items-center justify-center gap-2">
+                  取消
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modal);
+    }
+    
+    function addTask(projectId) {
+      const title = document.getElementById('taskTitle')?.value.trim();
+      const description = document.getElementById('taskDesc')?.value.trim();
+      const dueDate = document.getElementById('taskDueDate')?.value;
+      
+      if (!title) {
+        alert('請輸入任務標題');
+        return;
+      }
+      
+      const task = {
+        id: generateId(),
+        title: title,
+        description: description,
+        projectId: projectId,
+        dueDate: dueDate,
+        status: 'todo',
+        createdBy: State.currentUser.id,
+        createdAt: new Date().toISOString()
+      };
+      
+      State.tasks.push(task);
+      State.save();
+      
+      document.querySelectorAll('.fixed').forEach(el => el.remove());
+      render();
+      
+      console.log('${Icons.check} 新增任務:', task.title);
+    }
+    
+    function toggleTaskStatus(taskId) {
+      const task = State.tasks.find(t => t.id === taskId);
+      if (task) {
+        if (task.status === 'todo') task.status = 'inprogress';
+        else if (task.status === 'inprogress') task.status = 'done';
+        else task.status = 'todo';
+        
+        State.save();
+        render();
+      }
+    }
+    
+    function deleteTask(taskId) {
+      const task = State.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      
+      if (confirm('確定要刪除此附件嗎？')) {
+        // 儲存當前的 stage 和 project 資訊
+        const stageId = task.stageId;
+        const stage = State.stages.find(s => s.id === stageId);
+        const project = State.projects.find(p => p.id === task.projectId);
+        
+        // 刪除任務
+        State.tasks = State.tasks.filter(t => t.id !== taskId);
+        State.save();
+        
+        // 如果在 modal 中，關閉所有 modal 並重新顯示
+        const isInModal = document.querySelector('.fixed');
+        if (isInModal && stage && project) {
+          document.querySelectorAll('.fixed').forEach(el => el.remove());
+          showStageTasks(stageId, project.name, stage.name);
+        } else {
+          render();
+        }
+      }
+    }
+    
+    function attachEventListeners() {
+      // 使用內聯 onclick，不需要額外綁定
+      console.log('✅ 頁面已渲染');
+    }
+    
+    // ==================== 初始化 ====================
+    console.log('🚀 專案管理系統 v7.0 完整版啟動中...');
+    console.log('${Icons.chart} 當前數據:', {
+      用戶: State.currentUser?.name || '未登入',
+      專案數: State.projects.length,
+      任務數: State.tasks.length,
+      事件數: State.events.length,
+      帳號數: State.accounts.length
+    });
+    
+    render();
+    console.log('${Icons.check} 系統就緒！');
+  </script>
+</body>
+</html>
